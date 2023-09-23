@@ -780,7 +780,7 @@ if __name__ == "__main__":
     all_usage_audit_logs = adobe_api.get_usage_audit_logs(
         adobe_api.company_id,
         start_date="2022-02-01",
-        end_date="2022-02-28",  # inclusive
+        end_date="2023-07-31",  # inclusive
     )
 
     # Write the output to a local file
@@ -800,18 +800,18 @@ if __name__ == "__main__":
     adobe_api.write_to_csv_for_bulk_import(
         "all_usage_audit_logs.json",
         "all_usage_audit_logs.csv",
-        rsid="your-rsid-goes-here",
+        rsid="cnbanalyticsusage",
     )
 
     # Sense check the data
     adobe_api.data_sense_check("all_usage_audit_logs.csv")
 
     # # Check for existing data
-    # adobe_api.is_there_existing_data_for_date_range("all_usage_audit_logs.csv")
+    adobe_api.is_there_existing_data_for_date_range("all_usage_audit_logs.csv")
 
     # Validate CSV using Adobe's bulk validation endpoint
     adobe_api.validate_csv("all_usage_audit_logs.csv")
 
     # # DO NOT RUN THIS UNLESS YOU ARE SURE YOU WANT TO PERFORM A BULK DATA INSERTION
     # # Perform the data insertion
-    # adobe_api.bulk_data_insertion("all_usage_audit_logs.csv")
+    adobe_api.bulk_data_insertion("all_usage_audit_logs.csv")
