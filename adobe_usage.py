@@ -67,7 +67,8 @@ class AdobeAPI:
 
         :raises: ConnectionFailure if there's an error making the request
         """
-        url = f"https://ims-na1.adobelogin.com/ims/token/v3?client_id={self.config['client_id']}"
+        url = f"https://ims-na1.adobelogin.com/ims/token/v3?client_id={
+            self.config['client_id']}"
 
         request_payload = {
             "client_secret": self.config["client_secret"],
@@ -158,7 +159,8 @@ class AdobeAPI:
 
         while start_date_dt <= end_date_dt:
             current_start_date = start_date_dt
-            current_end_date = min(current_start_date + timedelta(days=89), end_date_dt)
+            current_end_date = min(
+                current_start_date + timedelta(days=89), end_date_dt)
 
             # Get inclusive date range datetime objects
             current_start_date, current_end_date = self.inclusive_date_range(
@@ -173,10 +175,12 @@ class AdobeAPI:
             page = 0
             has_more_pages = True
 
-            print(f"Fetching data chunk for {start_date_str} to {end_date_str}...")
+            print(
+                f"Fetching data chunk for {start_date_str} to {end_date_str}...")
 
             while has_more_pages:
-                url = f"https://analytics.adobe.io/api/{company_id}/auditlogs/usage"
+                url = f"https://analytics.adobe.io/api/{
+                    company_id}/auditlogs/usage"
 
                 params = {
                     "startDate": start_date_str,
@@ -197,16 +201,19 @@ class AdobeAPI:
                     if value:
                         params[key] = value
 
-                response = self.session.get(url, params=params, timeout=self.timeout)
+                response = self.session.get(
+                    url, params=params, timeout=self.timeout)
 
                 if response.status_code == 200:
                     data_page = response.json()
                     all_data.extend(data_page["content"])
                     has_more_pages = not data_page["lastPage"]
-                    print(f"Fetched page {page+1} of {data_page['totalPages']}")
+                    print(
+                        f"Fetched page {page+1} of {data_page['totalPages']}")
                 else:
                     raise RequestFailure(
-                        f"Request failed with status code: {response.status_code}"
+                        f"Request failed with status code: {
+                            response.status_code}"
                         f"\nResponse text: {response.text}"
                     )
 
@@ -215,7 +222,8 @@ class AdobeAPI:
             start_date_dt = current_end_date + timedelta(days=1)
 
         print(
-            f"Fetching usage audit logs finished. Fetched {len(all_data)} rows of data"
+            f"Fetching usage audit logs finished. Fetched {
+                len(all_data)} rows of data"
         )
         return all_data
 
@@ -275,7 +283,8 @@ class AdobeAPI:
                     event["eventType"] = "Unknown Event Type"
                 else:
                     event_type_int = (
-                        int(event_type) if isinstance(event_type, (str, int)) else None
+                        int(event_type) if isinstance(
+                            event_type, (str, int)) else None
                     )
                     if event_type_int in event_types_dict:
                         event["eventType"] = event_types_dict[event_type_int]
@@ -295,7 +304,8 @@ class AdobeAPI:
         # write the updated JSON file
         with open(json_file_path, "w", encoding="utf-8") as json_file:
             json.dump(json_data, json_file, indent=4)
-            print(f"update_event_types function updated JSON file: {json_file_path}")
+            print(
+                f"update_event_types function updated JSON file: {json_file_path}")
 
     def add_component_info(self, json_file_path):
         """
@@ -333,7 +343,8 @@ class AdobeAPI:
         # Write the updated JSON data to the file
         with open(json_file_path, "w", encoding="utf-8") as json_file:
             json.dump(updated_data, json_file, indent=4)
-            print(f"add_component_info function updated JSON file: {json_file_path}")
+            print(
+                f"add_component_info function updated JSON file: {json_file_path}")
 
     def add_adobe_events(self, json_file_path):
         """
@@ -396,7 +407,8 @@ class AdobeAPI:
         # write the updated JSON file
         with open(json_file_path, "w", encoding="utf-8") as json_file:
             json.dump(json_data, json_file, indent=4)
-            print(f"add_adobe_events function updated JSON file: {json_file_path}")
+            print(
+                f"add_adobe_events function updated JSON file: {json_file_path}")
 
     def write_to_csv_for_bulk_import(self, json_file_path, csv_file_path, rsid):
         """
@@ -431,10 +443,12 @@ class AdobeAPI:
             )
 
             for log in json.load(json_file):
-                event_desc_full = f"{log['eventType']};{log['eventDescription']}"
+                event_desc_full = f"{log['eventType']};{
+                    log['eventDescription']}"
 
                 # Set timestamp to the dateCreated field, converted to unix timestamp
-                timestamp = int(datetime.fromisoformat(log["dateCreated"]).timestamp())
+                timestamp = int(datetime.fromisoformat(
+                    log["dateCreated"]).timestamp())
 
                 # if login is not null, set marketingCloudVisitorID to the login field, without the @domain
                 # otherwise, set marketingCloudVisitorID to "unknown"
@@ -511,7 +525,8 @@ class AdobeAPI:
         plt.xticks(rotation=90)  # Angle x-axis labels to 90 degrees
 
         # Set the maximum number of x-axis ticks
-        axis.xaxis.set_major_locator(MaxNLocator(integer=True, prune="both", nbins=20))
+        axis.xaxis.set_major_locator(MaxNLocator(
+            integer=True, prune="both", nbins=20))
 
         plt.show()
 
@@ -554,7 +569,8 @@ class AdobeAPI:
         # Make the request
         with open(gzip_file_path, "rb") as file:
             files = {"file": file}
-            response = self.session.post(url, files=files, timeout=self.timeout)
+            response = self.session.post(
+                url, files=files, timeout=self.timeout)
 
         # Clean up the gzipped file
         os.remove(gzip_file_path)
@@ -595,7 +611,8 @@ class AdobeAPI:
                     rsid = row[0]
                 else:
                     if row[0] != rsid:
-                        raise ValueError("Multiple report suite IDs found in the CSV")
+                        raise ValueError(
+                            "Multiple report suite IDs found in the CSV")
 
                 # Get the date range
                 timestamp = int(row[1])
@@ -619,10 +636,12 @@ class AdobeAPI:
         :return: The response JSON object
         """
         # Extract the report suite ID and date range from the CSV file
-        rsid, start_date, end_date = self.extract_rsid_and_date_range(csv_file_path)
+        rsid, start_date, end_date = self.extract_rsid_and_date_range(
+            csv_file_path)
 
         # Get the date range in the format required by the API
-        start_date_dt, end_date_dt = self.inclusive_date_range(start_date, end_date)
+        start_date_dt, end_date_dt = self.inclusive_date_range(
+            start_date, end_date)
 
         # Convert datetime objects to ISO formatted strings for API request
         start_date_str = start_date_dt.strftime("%Y-%m-%dT%H:%M:%S")
@@ -633,7 +652,8 @@ class AdobeAPI:
         request_json = {
             "rsid": f"{rsid}",
             "globalFilters": [
-                {"type": "dateRange", "dateRange": f"{start_date_str}/{end_date_str}"}
+                {"type": "dateRange", "dateRange": f"{
+                    start_date_str}/{end_date_str}"}
             ],
             "metricContainer": {
                 "metrics": [
@@ -709,68 +729,155 @@ class AdobeAPI:
 
     def bulk_data_insertion(self, csv_file_path):
         """
-        Send a CSV file to the bulk data insertion endpoint. This function
-        includes checks to ensure that the CSV file is valid and that there
-        is no existing data for the date range.
+        Send a CSV file to the bulk data insertion endpoint with proper validation.
 
-        :param csv_file_path: The path to the CSV file to be sent
-        :return: The response from the ingestion endpoint
-        :raises: RequestFailure if there's an error making the request
+         :param csv_file_path: The path to the CSV file to be sent
+         :return: A dictionary containing the status and details of the operation
+         :raises: RequestFailure if there's an error making the request
         """
-        # Validate the CSV file
-        validation_result = self.validate_csv(csv_file_path)
-        if not validation_result["success"]:
-            raise RequestFailure("CSV file validation failed")
+        try:
+            # Validate the CSV file
+            validation_result = self.validate_csv(csv_file_path)
+            if not validation_result["success"]:
+                raise RequestFailure("CSV file validation failed")
 
-        # Check if there's existing data for the date range
-        has_existing_data = self.is_there_existing_data_for_date_range(csv_file_path)
-        if has_existing_data:
-            raise ExistingDataError(
-                "There is existing data for this date range. Bulk data insertion will not proceed."
-            )
+             # Check if there' s existing data for the date range
+            has_existing_data = self.is_there_existing_data_for_date_range(
+                csv_file_path)
+            if has_existing_data:
+                raise ExistingDataError(
+                    "There is existing data for this date range. Bulk data insertion will not proceed."
+                )
 
-        print(
-            "There is no existing data for this date range. Bulk data insertion will proceed."
-        )
+            print("No existing data found  - proceeding with bulk insertion")
 
-        # If neither of the above exceptions are raised, proceed with the bulk data insertion
-        url = "https://analytics-collection.adobe.io/aa/collect/v1/events"
+            # Perform the actual data insertion
+            ingestion_result = self._perform_bulk_insertion(csv_file_path)
 
-        # Add the additional headers required by the ingestion endpoint
-        additional_headers = {
-            "accept": "application/json",
-            "x-adobe-vgid": "usage_group1",
-        }
-        self.session.headers.update(additional_headers)
+            # Verify the data actually appears in Adobe Analytics
+            success, details = self.check_bulk_insertion_success(csv_file_path)
 
-        # Gzip the CSV file
-        gzip_file_path = self.gzip_file(csv_file_path)
+            if success:
+                print("Bulk data insertion completed successfully")
+                return {
+                    "status":  "success",
+                    "details": details,
+                    "ingestion_ result": ingestion_result
+                }
+            else:
+                # Handle the case where no data is found initially (normal for first upload)
+                print("No data found yet. This is normal for an initial upload.")
+                print("Waiting 5 minutes to allow Adobe Analytics time to process...")
 
-        # Send the gzipped file to the ingestion endpoint
-        with open(gzip_file_path, "rb") as file:
-            files = {"file": file}
-            response = self.session.post(url, files=files, timeout=self.timeout)
+                import time
+                time.sleep(300)   # Wait 5 minutes
 
-        # Clean up the gzipped file
-        os.remove(gzip_file_path)
+                # Try verification again
+                success, details = self.check_bulk_insertion_success(
+                    csv_file_path)
+                if success:
+                    print("Data now appears in Adobe Analytics - upload successful")
+                    return {
+                        "status":  "success",
+                        "details": details,
+                        "ingestion_ result": ingestion_result
+                    }
+                else:
+                    raise RequestFailure(
+                        f"Data verification failed after waiting:  {details['message']}"
+                    )
 
-        # Remove the additional headers after the request is complete
-        for header in additional_headers:
-            self.session.headers.pop(header, None)
+        except Exception as e:
+            print(f"Error during bulk data insertion:  {str(e)}")
+            raise
 
-        if response.status_code == 200:
-            ingestion_result = response.json()
-            return ingestion_result
-        else:
-            raise RequestFailure(
-                f"Request failed with status code: {response.status_code}"
-                f"\nResponse text: {response.text}"
-            )
+    def _perform_bulk_insertion(self, csv_file_path):
+        """
+        Perform the actual bulk data insertion to Adobe Analytics.
 
+        :param csv_file_ path: The path to the CSV file to be sent
+        :return: The response from the ingestion endpoint
+         """
+        try:
+            # Add the additional headers required by the ingestion endpoint
+            additional_headers = {
+                "accept": "application/json",
+                "x-adobe-vgid": "usage_group1",
+            }
+            self.session.headers.update(additional_headers)
+
+            # Gzip the CSV file
+            gzip_file_path = self.gzip_file(csv_file_path)
+
+            # Send the gzipped file to the ingestion endpoint
+            with open(gzip_file_path, "rb") as file:
+                files = {"file": file}
+                response = self.session.post(
+                    "https://analytics-collection.adobe.io/aa/collect/v1/events",
+                    files=files,
+                    timeout=self.timeout
+                )
+
+             # Clean up the gzipped file
+            os.remove(gzip_file_path)
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                raise RequestFailure(
+                    f"Request failed with status code: {response.status_code}"
+                    f"\nResponse text: {response.text}"
+                )
+
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error occurred: {str(e)}")
+            print("Please check your internet connection and try again.")
+            raise
+
+    def check_bulk_insertion_success(self, csv_file_path):
+        """
+        Check if the imported data appears in Adobe Analytics.
+
+         :param csv_file_path: Path to the CSV file that was imported
+         :return: Tuple of (success_bool, details_dict)
+        """
+        try:
+            # Extract RSID and date range from CSV
+            rsid, start_date, end_date = self. extract_rsid_and_date_range(
+                csv_file_path)
+
+            # Query Adobe Analytics for the imported data
+            query_result = self.is_there_existing_data_for_date_range(
+                csv_file_path)
+
+            if query_result:
+                return (True, {
+                    "status": "success",
+                    "message": "Data successfully inserted and verified in Adobe Analytics",
+                    "details": {
+                        "rsid": rsid,
+                        "date_range": f"{start_date} to {end_date}",
+                        # Subtract header row
+                        "record_count": sum(1 for _ in open(csv_file_path)) - 1
+                    }
+                })
+            else:
+                print("No data found yet. This is normal for an initial upload.")
+                return (False, {
+                    "status": "pending",
+                    "message": "Data insertion verification failed - no data found in Adobe Analytics yet."
+                })
+
+        except Exception as e:
+            return (False, {
+                "status": "error",
+                "message": f"Error verifying data insertion: {str(e)}"
+            })
 
 ####################################################################################################
 # Usage example
 ####################################################################################################
+
 
 if __name__ == "__main__":
     # Create an instance of the AdobeAPI class
@@ -779,8 +886,8 @@ if __name__ == "__main__":
     # fetch all usage audit logs for a date range
     all_usage_audit_logs = adobe_api.get_usage_audit_logs(
         adobe_api.company_id,
-        start_date="2022-02-01",
-        end_date="2023-07-31",  # inclusive
+        start_date="2024-04-01",
+        end_date="2025-01-30",  # inclusive
     )
 
     # Write the output to a local file
@@ -800,7 +907,7 @@ if __name__ == "__main__":
     adobe_api.write_to_csv_for_bulk_import(
         "all_usage_audit_logs.json",
         "all_usage_audit_logs.csv",
-        rsid="cnbanalyticsusage",
+        rsid="amtdiganalyticsusage",
     )
 
     # Sense check the data

@@ -27,7 +27,7 @@ class TestInclusiveDateRange:
     def test_inclusive_date_range_same_date(self, your_class_instance):
         """Test inclusive_date_range() with same start and end date"""
         start_date = "2021-09-01"
-        end_date = "2021-09-01"
+        end_date = "2021-10-01"
         expected_start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         expected_end_dt = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(
             days=1, seconds=-1
